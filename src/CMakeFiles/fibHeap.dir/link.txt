@@ -1,0 +1,2 @@
+/usr/sbin/ar qc libfibHeap.a CMakeFiles/fibHeap.dir/FibHeap.cpp.o
+/usr/sbin/ranlib libfibHeap.a
