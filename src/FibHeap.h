@@ -6,50 +6,60 @@
 #include <expected>
 #include <vector>
 
-
 namespace kstmc {
     class FibonacciHeap {
     public:
-        void insert(int64_t value);
 
+        FibonacciHeap() { };
+
+        void insert(int value);
 
         void removeMin();
 
-        std::optional<int64_t> getMin();
+        std::optional<int> getMin();
 
-
-        void decreaseKey(int64_t prevValue, int64_t newValue);
-
+        void decreaseKey(int prevValue, int newValue);
 
         void merge(FibonacciHeap& other);
 
+        void copyTo(FibonacciHeap &insFibHeap);
+
+
         struct Node {
-            int64_t data;
+            int data;
             Node* left = nullptr;
             Node* right = nullptr;
-            Node* child = nullptr;
+            Node* firstChild = nullptr;
+            Node* lastChild = nullptr;
             Node* parent = nullptr;
-			int64_t degree = 0;
+            int degree = 0;
             bool marked = false;
 
-            Node(int64_t data) : data(data) {
-            }
+            explicit Node(const int data) : data(data) {}
+            ~Node() = default;
+
         };
 
     private:
+        static void dfsCopy(Node* current, FibonacciHeap* newHeap);
+
+
+        static void appendToList(Node *&firstNode, Node *&lastNode, Node* newNode);
+
         void cascadeCut(Node* current);
-        Node* find(Node *currentNode, int64_t val);
-        void cut(Node* currentNode);
-        void insertIntoList(Node* listNode, Node* node);
-        void insertChild(Node* parent, Node* child);
-        void removeFromList(Node* listNode);
-        void consolidate(Node* currentNode);
-        void updateMin();
 
+        static Node* find(Node *currentNode, int val);
+        void cut(Node* childToCut);
 
-        Node *minNode = nullptr;
+        static void removeFromList(Node *&firstNode, Node *&lastNode, Node *listNode);
+        void consolidate(Node *&currentNode);
+
+        int64_t size = 0;
+        Node* minNode = nullptr;
+        Node* first = nullptr;
+
+        Node* last = nullptr;
         std::vector<Node*> degreeTree = std::vector<Node*>(239, nullptr);
     };
 }
-
 #endif //FIBONACCIIHEAP_LIBRARY_H
