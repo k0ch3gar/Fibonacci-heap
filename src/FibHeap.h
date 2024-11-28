@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <expected>
 #include <vector>
+#include <memory>
 
 namespace kstmc {
     class FibonacciHeap {
@@ -27,11 +28,11 @@ namespace kstmc {
 
         struct Node {
             int data;
-            Node* left = nullptr;
-            Node* right = nullptr;
-            Node* firstChild = nullptr;
-            Node* lastChild = nullptr;
-            Node* parent = nullptr;
+            std::shared_ptr<Node> left = nullptr;
+            std::shared_ptr<Node> right = nullptr;
+            std::shared_ptr<Node> firstChild = nullptr;
+            std::shared_ptr<Node> lastChild = nullptr;
+            std::shared_ptr<Node> parent = nullptr;
             int degree = 0;
             bool marked = false;
 
@@ -41,25 +42,22 @@ namespace kstmc {
         };
 
     private:
-        static void dfsCopy(Node* current, FibonacciHeap* newHeap);
+        void dfsCopy(std::shared_ptr<Node>& current, std::shared_ptr<FibonacciHeap>& newHeap);
 
+        void appendToList(std::shared_ptr<Node> &firstNode, std::shared_ptr<Node>& lastNode, std::shared_ptr<Node>& newNode);
+        void removeFromList(std::shared_ptr<Node> &firstNode, std::shared_ptr<Node>& lastNode, std::shared_ptr<Node>& listNode);
 
-        static void appendToList(Node *&firstNode, Node *&lastNode, Node* newNode);
+        std::shared_ptr<Node> find(std::shared_ptr<Node>& currentNode, int val);
+        void cascadeCut(std::shared_ptr<Node>& current);
+        void cut(std::shared_ptr<Node>& childToCut);
 
-        void cascadeCut(Node* current);
-
-        static Node* find(Node *currentNode, int val);
-        void cut(Node* childToCut);
-
-        static void removeFromList(Node *&firstNode, Node *&lastNode, Node *listNode);
-        void consolidate(Node *&currentNode);
+        void consolidate(std::shared_ptr<Node> &currentNode);
 
         int64_t size = 0;
-        Node* minNode = nullptr;
-        Node* first = nullptr;
-
-        Node* last = nullptr;
-        std::vector<Node*> degreeTree = std::vector<Node*>(239, nullptr);
+        std::shared_ptr<Node> minNode = nullptr;
+        std::shared_ptr<Node> first = nullptr;
+        std::shared_ptr<Node> last = nullptr;
+        std::vector<std::shared_ptr<Node>> degreeTree = std::vector<std::shared_ptr<Node>>(239, nullptr);
     };
 }
 #endif //FIBONACCIIHEAP_LIBRARY_H

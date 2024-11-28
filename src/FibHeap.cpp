@@ -1,7 +1,9 @@
 #include "FibHeap.h"
 
+#include <memory>
+
 void kstmc::FibonacciHeap::insert(int value) {
-    Node* newNode = new Node(value);
+    std::shared_ptr<Node> newNode(new Node(value));
 
     if (size == 0) {
         ++size;
@@ -16,10 +18,10 @@ void kstmc::FibonacciHeap::insert(int value) {
     if (minNode->data > value) minNode = newNode;
 }
 
-void kstmc::FibonacciHeap::removeFromList(Node *&firstNode, Node *&lastNode, Node *listNode) {
+void kstmc::FibonacciHeap::removeFromList(std::shared_ptr<Node> &firstNode, std::shared_ptr<Node>& lastNode, std::shared_ptr<Node>& listNode) {
 
-    Node* l = listNode->left;
-    Node* r = listNode->right;
+    auto l = listNode->left;
+    auto r = listNode->right;
     if (l != nullptr) l->right = r;
     else {
         firstNode = firstNode->right;
@@ -35,11 +37,11 @@ void kstmc::FibonacciHeap::removeFromList(Node *&firstNode, Node *&lastNode, Nod
     listNode->left = nullptr;
 }
 
-void kstmc::FibonacciHeap::cascadeCut(Node *current) {
+void kstmc::FibonacciHeap::cascadeCut(std::shared_ptr<Node> &current) {
     if (current == nullptr) return;
     if (current->marked) {
 
-        Node* parent = current->parent;
+        auto parent = current->parent;
         cut(current);
         cascadeCut(parent);
 
@@ -48,18 +50,18 @@ void kstmc::FibonacciHeap::cascadeCut(Node *current) {
     current->marked = true;
 }
 
-kstmc::FibonacciHeap::Node* kstmc::FibonacciHeap::find(Node *currentNode, int val) {
+std::shared_ptr<kstmc::FibonacciHeap::Node> kstmc::FibonacciHeap::find(std::shared_ptr<Node>& currentNode, int val) {
     if (currentNode == nullptr) return nullptr;
     if (currentNode->data == val) return currentNode;
-    Node* foundNode = find(currentNode->firstChild, val);
+    auto foundNode = find(currentNode->firstChild, val);
     if (foundNode != nullptr) return foundNode;
     return find(currentNode->right, val);
 }
 
-void kstmc::FibonacciHeap::cut(Node* childToCut) {
+void kstmc::FibonacciHeap::cut(std::shared_ptr<Node>& childToCut) {
     if (childToCut == nullptr || childToCut->parent == nullptr) return;
 
-    Node* parent = childToCut->parent;
+    auto parent = childToCut->parent;
 
 
     removeFromList(parent->firstChild, parent->lastChild, childToCut);
@@ -81,7 +83,7 @@ std::optional<int> kstmc::FibonacciHeap::getMin() {
 }
 
 void kstmc::FibonacciHeap::decreaseKey(int prevValue, int newValue) {
-    Node* foundNode = find(first, prevValue);
+    auto foundNode = find(first, prevValue);
     if (foundNode == nullptr) return;
     foundNode->data = newValue;
     if (foundNode->parent == nullptr) {
@@ -92,7 +94,7 @@ void kstmc::FibonacciHeap::decreaseKey(int prevValue, int newValue) {
     if (foundNode->parent->data < newValue) return;
 
 
-    Node* parent = foundNode->parent;
+    auto parent = foundNode->parent;
 
     cut(foundNode);
     cascadeCut(parent);
@@ -100,14 +102,14 @@ void kstmc::FibonacciHeap::decreaseKey(int prevValue, int newValue) {
     minNode = minNode->data < newValue ? minNode : foundNode;
 }
 
-void kstmc::FibonacciHeap::dfsCopy(kstmc::FibonacciHeap::Node* current, kstmc::FibonacciHeap* newHeap) {
+void kstmc::FibonacciHeap::dfsCopy(std::shared_ptr<Node>& current, std::shared_ptr<FibonacciHeap>& newHeap) {
     while (current == nullptr) return;
     newHeap->insert(current->data);
     dfsCopy(current->firstChild, newHeap);
     dfsCopy(current->right, newHeap);
 }
 
-void kstmc::FibonacciHeap::appendToList(Node *&firstNode, Node *&lastNode, Node *newNode) {
+void kstmc::FibonacciHeap::appendToList(std::shared_ptr<Node> &firstNode, std::shared_ptr<Node> &lastNode, std::shared_ptr<Node>& newNode) {
     if (firstNode == nullptr) {
         firstNode = newNode;
         lastNode = newNode;
@@ -124,7 +126,8 @@ void kstmc::FibonacciHeap::appendToList(Node *&firstNode, Node *&lastNode, Node 
 }
 
 void kstmc::FibonacciHeap::copyTo(FibonacciHeap &insFibHeap) {
-    dfsCopy(first, &insFibHeap);
+    std::shared_ptr<FibonacciHeap> ptr = std::make_shared<FibonacciHeap>(insFibHeap);
+    dfsCopy(first, ptr);
 }
 
 void kstmc::FibonacciHeap::removeMin() {
@@ -137,7 +140,7 @@ void kstmc::FibonacciHeap::removeMin() {
 
     if (size == 1) {
         --size;
-        delete minNode;
+        minNode.reset();
         first = last = minNode = nullptr;
         return;
     }
@@ -145,12 +148,12 @@ void kstmc::FibonacciHeap::removeMin() {
     --size;
 
     removeFromList(first, last, minNode);
-    delete minNode;
+    minNode.reset();
     minNode = first;
 
     auto currentNode = first;
     while (currentNode != nullptr) {
-        Node* next = currentNode->right;
+        auto next = currentNode->right;
         consolidate(currentNode);
 
         minNode = (currentNode->data <= minNode->data ? currentNode : minNode);
@@ -160,7 +163,7 @@ void kstmc::FibonacciHeap::removeMin() {
     for (auto& x : degreeTree) x = nullptr;
 }
 
-void kstmc::FibonacciHeap::consolidate(Node *&currentNode) {
+void kstmc::FibonacciHeap::consolidate(std::shared_ptr<Node> &currentNode) {
 
     if (degreeTree.at(currentNode->degree) == nullptr) {
         degreeTree.at(currentNode->degree) = currentNode;
@@ -168,7 +171,7 @@ void kstmc::FibonacciHeap::consolidate(Node *&currentNode) {
     }
 
 
-    Node* otherNode = degreeTree.at(currentNode->degree);
+    auto otherNode = degreeTree.at(currentNode->degree);
     degreeTree.at(currentNode->degree) = nullptr;
 
     if (currentNode->data > otherNode->data) std::swap(currentNode, otherNode);
