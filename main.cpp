@@ -3,7 +3,7 @@
 
 
 int main() {
-    kstmc::FibonacciHeap fib;
+    kstmc::FibonacciHeap<int> fib;
     for (int i = 0; i < 10; ++i) {
         fib.insert(i);
     }
