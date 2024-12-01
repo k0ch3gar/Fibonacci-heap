@@ -1,7 +1,7 @@
-#include <memory>
-
 #ifndef FIBONACCIHEAP_NODE_H
 #define FIBONACCIHEAP_NODE_H
+
+#include <memory>
 
 namespace kstmc {
     template<typename Tp>

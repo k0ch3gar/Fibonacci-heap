@@ -1,11 +1,11 @@
 #ifndef FIBONACCIIHEAP_LIBRARY_H
 #define FIBONACCIIHEAP_LIBRARY_H
+
 #include <cstdint>
 #include <optional>
 #include <unordered_set>
 #include <expected>
 #include <vector>
-#include <memory>
 #include "fibonacci_heap_node.h"
 
 namespace kstmc {
