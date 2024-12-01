@@ -1,4 +1,4 @@
-#include <src/FibHeap.h>
+#include <src/fibonacci_heap.h>
 #include <iostream>
 
 
