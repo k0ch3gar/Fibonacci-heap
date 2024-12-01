@@ -11,6 +11,9 @@ namespace kstmc {
         typedef Tp value_type;
         typedef value_type& reference;
         typedef const value_type& const_reference;
+        typedef value_type* pointer;
+        typedef value_type difference_type;
+
         value_type data;
         node_pointer left = nullptr;
         node_pointer right = nullptr;

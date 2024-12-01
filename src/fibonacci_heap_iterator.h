@@ -6,7 +6,7 @@
 
 namespace kstmc {
 template <typename Tp>
-    class fibonacci_heap_iterator : public std::iterator<std::bidirectional_iterator_tag, Tp> {
+    class fibonacci_heap_iterator {
     public:
         typedef fibonacci_heap_iterator iterator;
         typedef fibonacci_heap_node<Tp> node_type;
@@ -14,13 +14,16 @@ template <typename Tp>
         typedef node_type::value_type value_type;
         typedef node_type::reference reference;
         typedef node_type::const_reference const_reference;
+        typedef node_type::pointer pointer;
+        typedef node_type::difference_type difference_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
 
-        static iterator makeBegin(node_pointer node) {
-            return iterator(node);
-        }
-
-        static iterator makeEnd(node_pointer node) {
-            return ++iterator(node);
+        explicit fibonacci_heap_iterator(node_pointer node) {
+            _node = node;
+            if (_node->right != nullptr) _next_stack.push(node->right);
+            if (_node->firstChild != nullptr) _next_stack.push(node->firstChild);
+            if (_node->left != nullptr) _prev_stack.push(node->left);
+            if (_node->lastChild != nullptr) _next_stack.push(node->lastChild);
         }
 
         reference operator*() const {
@@ -64,21 +67,12 @@ template <typename Tp>
         }
 
     private:
-        explicit fibonacci_heap_iterator(node_pointer node) {
-            _node = node;
-            if (_node->right != nullptr) _next_stack.push(node->right);
-            if (_node->firstChild != nullptr) _next_stack.push(node->firstChild);
-            if (_node->left != nullptr) _prev_stack.push(node->left);
-            if (_node->lastChild != nullptr) _next_stack.push(node->lastChild);
-        }
-
         void increase() {
-            if (_node == nullptr) return;
+            if (_node != nullptr) _prev_stack.push(_node);
             if (_next_stack.empty()) {
                 _node = nullptr;
                 return;
             }
-            _prev_stack.push(_node);
             while (_next_stack.top()->lastChild == _node) {
                 _node = _next_stack.top();
                 _next_stack.pop();
@@ -93,7 +87,7 @@ template <typename Tp>
         }
 
         void decrease() {
-            if (_node == nullptr) return;
+            if (_node != nullptr) _next_stack.push(_node);
             if (_prev_stack.empty()) {
                 _node = nullptr;
                 return;

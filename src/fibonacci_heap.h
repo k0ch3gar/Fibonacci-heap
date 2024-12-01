@@ -71,19 +71,19 @@ namespace kstmc {
 
         // iterators
         iterator begin() {
-            return iterator::makeBegin(_first);
+            return iterator(_first);
         }
 
         iterator end() {
-            return iterator::makeEnd(_last);
+            return ++iterator(find_last());
         }
 
         const_iterator begin() const {
-            return iterator::makeBegin(_first);
+            return iterator(_first);
         }
 
         const_iterator end() const {
-            return iterator::makeEnd(_last);
+            return ++iterator(find_last());
         }
 
         reverse_iterator rbegin() {
@@ -334,6 +334,16 @@ namespace kstmc {
         }
 
     private:
+        // idk if it even is needed
+        node_pointer find_last() {
+            node_pointer tmp_node = _last;
+            while (tmp_node->right != nullptr || tmp_node->lastChild != nullptr) {
+                if (tmp_node->right != nullptr) tmp_node = tmp_node->right;
+                else tmp_node = tmp_node->lastChild;
+            }
+            return tmp_node;
+        }
+
         void dfs_copy(node_pointer& current, heap_pointer& newHeap) {
             if (current == nullptr) return;
             newHeap->insert(current->data);
