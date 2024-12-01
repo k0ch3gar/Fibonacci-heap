@@ -28,14 +28,13 @@ namespace kstmc {
         typedef Comp key_compare;
         typedef key_compare value_compare;
         typedef Alloc allocator_type;
-
-        // unimplemented typedefs
         typedef fibonacci_heap_iterator<value_type> iterator;
-        typedef node_type insert_return_type;
-
         typedef const iterator const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+        // unimplemented typedefs
+        typedef node_type insert_return_type;
 
         // construct/copy/destroy
         fibonacci_heap() = default;
