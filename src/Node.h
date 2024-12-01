@@ -6,7 +6,7 @@
 namespace kstmc {
     template<typename Tp>
     struct Node {
-        typedef Node* node_pointer;
+        typedef Node<Tp>* node_pointer;
         typedef Tp value_type;
         value_type data;
         node_pointer left = nullptr;

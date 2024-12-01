@@ -22,9 +22,9 @@ namespace kstmc {
         typedef Comp key_compare;
         typedef value_type& reference;
         typedef const value_type& const_reference;
-        typedef unsigned long size_type;
+        typedef uint64_t size_type;
         typedef Node<Tp> node_type;
-        typedef node_type* node_pointer;
+        typedef node_type::node_pointer node_pointer;
         typedef Alloc allocator_type;
 
         FibonacciHeap() { };
@@ -66,7 +66,7 @@ namespace kstmc {
                 auto next = currentNode->right;
                 consolidate(currentNode);
 
-                minNode = (comparator(minNode->data, currentNode->data) ? currentNode : minNode);
+                minNode = (!comparator(minNode->data, currentNode->data) ? currentNode : minNode);
                 currentNode = next;
             }
 
@@ -96,6 +96,10 @@ namespace kstmc {
             cascadeCut(parent);
 
             minNode = comparator(minNode->data, newValue) ? minNode : foundNode;
+        }
+
+        size_type Size() {
+            return size;
         }
 
         // костя сделай
@@ -194,7 +198,7 @@ namespace kstmc {
             consolidate(currentNode);
         }
         node_pointer allocate(value_type value) {
-            node_pointer node = allocator.allocate(1);
+            node_pointer node(allocator.allocate(1));
             node->data = value;
             ++size;
             return node;
@@ -207,7 +211,7 @@ namespace kstmc {
 
         allocator_type allocator = allocator_type();
         key_compare comparator = key_compare();
-        int64_t size = 0;
+        size_type size = 0;
         node_pointer minNode = nullptr;
         node_pointer first = nullptr;
         node_pointer last = nullptr;
