@@ -11,7 +11,8 @@
 namespace kstmc {
     template <
         typename Tp,
-        typename Comp = std::less<Tp>
+        typename Comp = std::less<Tp>,
+        typename Alloc = std::allocator<Node<Tp>>
     >
     class FibonacciHeap {
     public:
@@ -24,7 +25,7 @@ namespace kstmc {
         typedef unsigned long size_type;
         typedef Node<Tp> node_type;
         typedef node_type* node_pointer;
-        typedef std::allocator<Node<Tp>> allocator_type;
+        typedef Alloc allocator_type;
 
         FibonacciHeap() { };
 
