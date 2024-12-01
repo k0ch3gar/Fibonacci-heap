@@ -7,6 +7,7 @@
 #include <expected>
 #include <vector>
 #include "fibonacci_heap_node.h"
+#include "fibonacci_heap_iterator.h"
 
 namespace kstmc {
     template <
@@ -23,13 +24,13 @@ namespace kstmc {
         typedef node_type::value_type value_type;
         typedef node_type::reference reference;
         typedef node_type::const_reference const_reference;
+        typedef node_type::size_type size_type;
         typedef Comp key_compare;
         typedef key_compare value_compare;
-        typedef uint64_t size_type;
         typedef Alloc allocator_type;
 
         // unimplemented typedefs
-        typedef node_type iterator;
+        typedef fibonacci_heap_iterator<value_type> iterator;
         typedef node_type insert_return_type;
 
         typedef const iterator const_iterator;
@@ -70,19 +71,19 @@ namespace kstmc {
 
         // iterators
         iterator begin() {
-            throw std::logic_error("fibonacci::begin method is unimplemented");
+            return iterator::makeBegin(_first);
         }
 
         iterator end() {
-            throw std::logic_error("fibonacci::end method is unimplemented");
+            return iterator::makeEnd(_last);
         }
 
         const_iterator begin() const {
-            throw std::logic_error("fibonacci::begin method is unimplemented");
+            return iterator(_first);
         }
 
         const_iterator end() const {
-            throw std::logic_error("fibonacci::end method is unimplemented");
+            return iterator(_last);
         }
 
         reverse_iterator rbegin() {
@@ -269,10 +270,6 @@ namespace kstmc {
 
         std::pair<const_iterator, const_iterator> equal_range(const_reference key) const {
             throw std::logic_error("fibonacci::equal_range method is unimplemented");
-        }
-
-        size_type size() {
-            return size;
         }
 
         // extra

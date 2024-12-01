@@ -7,9 +7,9 @@ int main() {
     for (int i = 0; i < 10; ++i) {
         fib.insert(i);
     }
-    for (int i = 0; i < 11; ++i) {
-        auto ans = fib.get_min();
-        std::cout << ans.value_or(-1) << '\n';
-        fib.remove_min();
+    kstmc::fibonacci_heap<int>::iterator it = fib.begin();
+    kstmc::fibonacci_heap<int>::iterator end = fib.end();
+    while (it++ != end) {
+        std::cout << *it << std::endl;
     }
 }
