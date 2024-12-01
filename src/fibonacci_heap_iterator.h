@@ -53,8 +53,6 @@ template <typename Tp>
         bool operator==(const iterator& other) {
             if (this->_next_stack.empty() != other._next_stack.empty()) return false;
             if (this->_prev_stack.empty() != other._prev_stack.empty()) return false;
-            if (this->_next_stack.empty()) return true;
-            if (this->_prev_stack.empty()) return true;
             return this->_node == other._node;
         }
 
