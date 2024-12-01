@@ -66,6 +66,9 @@ template <typename Tp>
 
     private:
         void increase() {
+            if (_node == nullptr && _next_stack.empty()) {
+                throw std::out_of_range("Iterator is on its end");
+            }
             if (_node != nullptr) _prev_stack.push(_node);
             if (_next_stack.empty()) {
                 _node = nullptr;
@@ -85,6 +88,9 @@ template <typename Tp>
         }
 
         void decrease() {
+            if (_prev_stack.empty()) {
+                throw std::out_of_range("Iterator is on its begin");
+            }
             if (_node != nullptr) _next_stack.push(_node);
             if (_prev_stack.empty()) {
                 _node = nullptr;
