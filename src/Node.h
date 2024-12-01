@@ -5,8 +5,8 @@
 
 namespace kstmc {
     template<typename Tp>
-    struct Node {
-        typedef Node<Tp>* node_pointer;
+    struct fibonacci_heap_node {
+        typedef fibonacci_heap_node<Tp>* node_pointer;
         typedef Tp value_type;
         value_type data;
         node_pointer left = nullptr;
@@ -17,9 +17,9 @@ namespace kstmc {
         int degree = 0;
         bool marked = false;
 
-        explicit Node(const value_type data) : data(data) {}
+        explicit fibonacci_heap_node(const value_type data) : data(data) {}
 
-        ~Node() = default;
+        ~fibonacci_heap_node() = default;
     };
 }
 

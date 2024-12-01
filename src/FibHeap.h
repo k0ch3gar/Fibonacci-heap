@@ -12,80 +12,309 @@ namespace kstmc {
     template <
         typename Tp,
         typename Comp = std::less<Tp>,
-        typename Alloc = std::allocator<Node<Tp>>
+        typename Alloc = std::allocator<fibonacci_heap_node<Tp>>
     >
-    class FibonacciHeap {
+    class fibonacci_heap {
     public:
-        typedef FibonacciHeap<Tp, Comp> heap_type;
+        typedef fibonacci_heap<Tp, Comp> heap_type;
         typedef std::shared_ptr<heap_type> heap_pointer;
         typedef Tp value_type;
         typedef Comp key_compare;
+        typedef key_compare value_compare;
         typedef value_type& reference;
         typedef const value_type& const_reference;
         typedef uint64_t size_type;
-        typedef Node<Tp> node_type;
+        typedef fibonacci_heap_node<Tp> node_type;
         typedef node_type::node_pointer node_pointer;
         typedef Alloc allocator_type;
 
-        FibonacciHeap() { };
+        // unimplemented typedefs
+        typedef node_type iterator;
+        typedef node_type insert_return_type;
 
-        void insert(value_type value) {
+        typedef const iterator const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+        // construct/copy/destroy
+        fibonacci_heap() = default;
+
+        fibonacci_heap(const_reference value) {
+            insert(value);
+        }
+
+        explicit fibonacci_heap(const key_compare comp) {
+            _comp = comp;
+        }
+
+        template <class InputIterator>
+        fibonacci_heap(InputIterator first, InputIterator last, const key_compare& comp = key_compare()) {
+            throw std::logic_error("Constructor is unimplemented");
+        }
+
+        fibonacci_heap(std::initializer_list<value_type> il, const key_compare& comp = key_compare()) {
+            throw std::logic_error("Constructor is unimplemented");
+        }
+
+        void swap(heap_type& other) {
+            throw std::logic_error("fibonacci::swap method is unimplemented");
+        }
+
+        static void swap(heap_type& a, heap_type& b) {
+            throw std::logic_error("fibonacci::swap method is unimplemented");
+        }
+
+        ~fibonacci_heap() {
+            clear();
+        }
+
+        // iterators
+        iterator begin() {
+            throw std::logic_error("fibonacci::begin method is unimplemented");
+        }
+
+        iterator end() {
+            throw std::logic_error("fibonacci::end method is unimplemented");
+        }
+
+        const_iterator begin() const {
+            throw std::logic_error("fibonacci::begin method is unimplemented");
+        }
+
+        const_iterator end() const {
+            throw std::logic_error("fibonacci::end method is unimplemented");
+        }
+
+        reverse_iterator rbegin() {
+            return reverse_iterator(end());
+        }
+
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(end());
+        }
+
+        reverse_iterator rend() {
+            return reverse_iterator(begin());
+        }
+
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(begin());
+        }
+
+        const_iterator cbegin() const {
+            return begin();
+        }
+
+        const_iterator cend() const {
+            return end();
+        }
+
+        const_reverse_iterator crbegin() const {
+            return rbegin();
+        }
+
+        const_reverse_iterator crend() const {
+            return rend();
+        }
+
+        // comparison
+        bool operator==(const heap_type& other) const {
+            throw std::logic_error("fibonacci::operator== method is unimplemented");
+        }
+
+        bool operator!=(const heap_type& other) const {
+            throw std::logic_error("fibonacci::operator!= method is unimplemented");
+        }
+
+        // observers
+        key_compare key_comp() {
+            return _comp;
+        }
+
+        value_compare value_comp() {
+            return _comp;
+        }
+
+        allocator_type get_alloc() {
+            return _alloc;
+        }
+
+        // capacity
+        [[nodiscard]] size_type size() const {
+            return _size;
+        }
+
+        [[nodiscard]] size_type max_size() const {
+            return ULONG_MAX;
+        }
+
+        [[nodiscard]] bool empty() const {
+            return _size == 0;
+        }
+
+        // modifiers
+        template <class... Args>
+        std::pair<iterator, bool> emplace(Args&&... args) {
+            throw std::logic_error("fibonacci::emplace method is unimplemented");
+        }
+
+        template <class... Args>
+        iterator emplace_hint(const_iterator position, Args&&... args) {
+            throw std::logic_error("fibonacci::emplace_hint method is unimplemented");
+        }
+//        should be implemented too, but it conflicts with the original insert method
+//        std::pair<iterator, bool> insert(const_reference value) {
+//            throw std::logic_error("fibonacci::insert method is unimplemented");
+//        }
+
+        void insert(const_reference value) {
             node_pointer newNode = allocate(value);
 
-            if (size == 1) {
-                first = newNode;
-                last = newNode;
-                minNode = first;
+            if (_size == 1) {
+                _first = newNode;
+                _last = newNode;
+                _minNode = _first;
                 return;
             }
 
-            appendToList(first, last, newNode);
-            if (minNode->data > value) minNode = newNode;
+            appendToList(_first, _last, newNode);
+            if (_minNode->data > value) _minNode = newNode;
         }
 
-        void removeMin() {
-            if (size == 0) return;
+        iterator insert(const_iterator position, const_reference value) {
+            throw std::logic_error("fibonacci::insert method is unimplemented");
+        }
 
-            while (minNode->firstChild != nullptr) {
-                auto child = minNode->firstChild;
+        template <class InputIterator>
+        void insert(InputIterator first, InputIterator last) {
+            throw std::logic_error("fibonacci::insert method is unimplemented");
+        }
+
+        void insert(std::initializer_list<value_type> il) {
+            insert<value_type>(il.begin(), il.end());
+        }
+
+        insert_return_type insert(node_type node) {
+            throw std::logic_error("fibonacci::insert method is unimplemented");
+        }
+
+        iterator insert(const_iterator position, node_type node) {
+            throw std::logic_error("fibonacci::insert method is unimplemented");
+        }
+
+        node_type extract(const_reference key) {
+            throw std::logic_error("fibonacci::extract method is unimplemented");
+        }
+
+        node_type extract(const_iterator position) {
+            throw std::logic_error("fibonacci::extract method is unimplemented");
+        }
+
+        void merge(heap_type& other) {
+            throw std::logic_error("fibonacci::merge method not implemented");
+        }
+
+        size_type erase(const_reference key) {
+            throw std::logic_error("fibonacci::erase method is unimplemented");
+        }
+
+        iterator erase(const_iterator position) {
+            throw std::logic_error("fibonacci::erase method is unimplemented");
+        }
+
+        iterator erase(const_iterator first, const_iterator last) {
+            throw std::logic_error("fibonacci::erase method is unimplemented");
+        }
+
+        void clear() {
+            throw std::logic_error("fibonacci::clear method is unimplemented");
+        }
+
+        // operations
+        iterator find(const_reference key) {
+            throw std::logic_error("fibonacci::find method is unimplemented");
+        }
+
+        const_iterator find(const_reference key) const {
+            throw std::logic_error("fibonacci::find method is unimplemented");
+        }
+
+        size_type count(const_reference key) {
+            throw std::logic_error("fibonacci::count method is unimplemented");
+        }
+
+        bool contains(const_reference key) {
+            throw std::logic_error("fibonacci::contains method is unimplemented");
+        }
+
+        iterator lower_bound(const_reference key) {
+            throw std::logic_error("fibonacci::lower_bound method is unimplemented");
+        }
+
+        const_iterator lower_bound(const_reference key) const {
+            throw std::logic_error("fibonacci::lower_bound method is unimplemented");
+        }
+
+        iterator upper_bound(const_reference key) {
+            throw std::logic_error("fibonacci::upper_bound method is unimplemented");
+        }
+
+        const_iterator upper_bound(const_reference key) const {
+            throw std::logic_error("fibonacci::upper_bound method is unimplemented");
+        }
+
+        std::pair<iterator, iterator> equal_range(const_reference key) {
+            throw std::logic_error("fibonacci::equal_range method is unimplemented");
+        }
+
+        std::pair<const_iterator, const_iterator> equal_range(const_reference key) const {
+            throw std::logic_error("fibonacci::equal_range method is unimplemented");
+        }
+
+        // extra
+        void remove_min() {
+            if (_size == 0) return;
+
+            while (_minNode->firstChild != nullptr) {
+                auto child = _minNode->firstChild;
                 cut(child);
             }
 
-            if (size == 1) {
-                deallocate(minNode);
-                first = last = minNode = nullptr;
+            if (_size == 1) {
+                deallocate(_minNode);
+                _first = _last = _minNode = nullptr;
                 return;
             }
 
-            removeFromList(first, last, minNode);
-            deallocate(minNode);
-            minNode = first;
+            removeFromList(_first, _last, _minNode);
+            deallocate(_minNode);
+            _minNode = _first;
 
-            auto currentNode = first;
+            auto currentNode = _first;
             while (currentNode != nullptr) {
                 auto next = currentNode->right;
                 consolidate(currentNode);
 
-                minNode = (!comparator(minNode->data, currentNode->data) ? currentNode : minNode);
+                _minNode = (!_comp(_minNode->data, currentNode->data) ? currentNode : _minNode);
                 currentNode = next;
             }
 
-            for (auto &x: degreeTree) x = nullptr;
+            for (auto &x: _degreeTree) x = nullptr;
         }
 
-        std::optional<value_type> getMin() {
-            if (size == 0) {
+        std::optional<value_type> get_min() {
+            if (_size == 0) {
                 return std::nullopt;
             }
-            return minNode->data;
+            return _minNode->data;
         }
 
-        void decreaseKey(value_type prevValue, value_type newValue) {
-            auto foundNode = find(first, prevValue);
+        void decrease_key(value_type prevValue, value_type newValue) {
+            auto foundNode = find(_first, prevValue);
             if (foundNode == nullptr) return;
             foundNode->data = newValue;
             if (foundNode->parent == nullptr) {
-                minNode = comparator(minNode->data, newValue) ? minNode : foundNode;
+                _minNode = _comp(_minNode->data, newValue) ? _minNode : foundNode;
                 return;
             }
             if (foundNode->parent->data < newValue) return;
@@ -95,19 +324,16 @@ namespace kstmc {
             cut(foundNode);
             cascadeCut(parent);
 
-            minNode = comparator(minNode->data, newValue) ? minNode : foundNode;
+            _minNode = _comp(_minNode->data, newValue) ? _minNode : foundNode;
         }
 
-        size_type Size() {
+        size_type size() {
             return size;
         }
 
-        // костя сделай
-        void merge(heap_type& other);
-
-        void copyTo(heap_type &insFibHeap) {
+        void copyTo(heap_type& insFibHeap) {
             heap_pointer ptr = std::make_shared<heap_type>(insFibHeap);
-            dfsCopy(first, ptr);
+            dfsCopy(_first, ptr);
         }
 
     private:
@@ -173,24 +399,24 @@ namespace kstmc {
             auto parent = childToCut->parent;
 
             removeFromList(parent->firstChild, parent->lastChild, childToCut);
-            appendToList(first, last, childToCut);
+            appendToList(_first, _last, childToCut);
 
             childToCut->parent = nullptr;
             childToCut->marked = false;
             --parent->degree;
         }
         void consolidate(node_pointer &currentNode) {
-            if (degreeTree.at(currentNode->degree) == nullptr) {
-                degreeTree.at(currentNode->degree) = currentNode;
+            if (_degreeTree.at(currentNode->degree) == nullptr) {
+                _degreeTree.at(currentNode->degree) = currentNode;
                 return;
             }
 
-            auto otherNode = degreeTree.at(currentNode->degree);
-            degreeTree.at(currentNode->degree) = nullptr;
+            auto otherNode = _degreeTree.at(currentNode->degree);
+            _degreeTree.at(currentNode->degree) = nullptr;
 
             if (currentNode->data > otherNode->data) std::swap(currentNode, otherNode);
 
-            removeFromList(first, last, otherNode);
+            removeFromList(_first, _last, otherNode);
             appendToList(currentNode->firstChild, currentNode->lastChild, otherNode);
 
             otherNode->parent = currentNode;
@@ -198,24 +424,24 @@ namespace kstmc {
             consolidate(currentNode);
         }
         node_pointer allocate(value_type value) {
-            node_pointer node(allocator.allocate(1));
+            node_pointer node(_alloc.allocate(1));
             node->data = value;
-            ++size;
+            ++_size;
             return node;
         }
         void deallocate(node_pointer node) {
             if (node == nullptr) return;
-            allocator.deallocate(node, 1);
-            --size;
+            _alloc.deallocate(node, 1);
+            --_size;
         }
 
-        allocator_type allocator = allocator_type();
-        key_compare comparator = key_compare();
-        size_type size = 0;
-        node_pointer minNode = nullptr;
-        node_pointer first = nullptr;
-        node_pointer last = nullptr;
-        std::vector<node_pointer> degreeTree = std::vector<node_pointer>(239, nullptr);
+        allocator_type _alloc = allocator_type();
+        key_compare _comp = key_compare();
+        size_type _size = 0;
+        node_pointer _minNode = nullptr;
+        node_pointer _first = nullptr;
+        node_pointer _last = nullptr;
+        std::vector<node_pointer> _degreeTree = std::vector<node_pointer>(239, nullptr);
     };
 }
 #endif //FIBONACCIIHEAP_LIBRARY_H
