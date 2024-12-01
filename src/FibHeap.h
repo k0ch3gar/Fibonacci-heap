@@ -177,7 +177,7 @@ namespace kstmc {
                 return;
             }
 
-            appendToList(_first, _last, newNode);
+            append_to_list(_first, _last, newNode);
             if (_minNode->data > value) _minNode = newNode;
         }
 
@@ -271,6 +271,10 @@ namespace kstmc {
             throw std::logic_error("fibonacci::equal_range method is unimplemented");
         }
 
+        size_type size() {
+            return size;
+        }
+
         // extra
         void remove_min() {
             if (_size == 0) return;
@@ -286,7 +290,7 @@ namespace kstmc {
                 return;
             }
 
-            removeFromList(_first, _last, _minNode);
+            remove_from_list(_first, _last, _minNode);
             deallocate(_minNode);
             _minNode = _first;
 
@@ -322,28 +326,24 @@ namespace kstmc {
             auto parent = foundNode->parent;
 
             cut(foundNode);
-            cascadeCut(parent);
+            cascade_cut(parent);
 
             _minNode = _comp(_minNode->data, newValue) ? _minNode : foundNode;
         }
 
-        size_type size() {
-            return size;
-        }
-
-        void copyTo(heap_type& insFibHeap) {
+        void copy_to(heap_type& insFibHeap) {
             heap_pointer ptr = std::make_shared<heap_type>(insFibHeap);
-            dfsCopy(_first, ptr);
+            dfs_copy(_first, ptr);
         }
 
     private:
-        void dfsCopy(node_pointer& current, heap_pointer & newHeap) {
+        void dfs_copy(node_pointer& current, heap_pointer & newHeap) {
             if (current == nullptr) return;
             newHeap->insert(current->data);
-            dfsCopy(current->firstChild, newHeap);
-            dfsCopy(current->right, newHeap);
+            dfs_copy(current->firstChild, newHeap);
+            dfs_copy(current->right, newHeap);
         }
-        void appendToList(node_pointer& firstNode, node_pointer& lastNode, node_pointer& newNode) {
+        void append_to_list(node_pointer& firstNode, node_pointer& lastNode, node_pointer& newNode) {
             if (firstNode == nullptr) {
                 firstNode = newNode;
                 lastNode = newNode;
@@ -358,7 +358,7 @@ namespace kstmc {
             newNode->right = nullptr;
             newNode->parent = firstNode->parent;
         }
-        void removeFromList(node_pointer& firstNode, node_pointer& lastNode, node_pointer& listNode) {
+        void remove_from_list(node_pointer& firstNode, node_pointer& lastNode, node_pointer& listNode) {
             auto l = listNode->left;
             auto r = listNode->right;
             if (l != nullptr) l->right = r;
@@ -381,13 +381,13 @@ namespace kstmc {
             if (foundNode != nullptr) return foundNode;
             return find(currentNode->right, val);
         }
-        void cascadeCut(node_pointer& current) {
+        void cascade_cut(node_pointer& current) {
             if (current == nullptr) return;
             if (current->marked) {
 
                 auto parent = current->parent;
                 cut(current);
-                cascadeCut(parent);
+                cascade_cut(parent);
 
                 return;
             }
@@ -398,8 +398,8 @@ namespace kstmc {
 
             auto parent = childToCut->parent;
 
-            removeFromList(parent->firstChild, parent->lastChild, childToCut);
-            appendToList(_first, _last, childToCut);
+            remove_from_list(parent->firstChild, parent->lastChild, childToCut);
+            append_to_list(_first, _last, childToCut);
 
             childToCut->parent = nullptr;
             childToCut->marked = false;
@@ -416,8 +416,8 @@ namespace kstmc {
 
             if (currentNode->data > otherNode->data) std::swap(currentNode, otherNode);
 
-            removeFromList(_first, _last, otherNode);
-            appendToList(currentNode->firstChild, currentNode->lastChild, otherNode);
+            remove_from_list(_first, _last, otherNode);
+            append_to_list(currentNode->firstChild, currentNode->lastChild, otherNode);
 
             otherNode->parent = currentNode;
             currentNode->degree++;
