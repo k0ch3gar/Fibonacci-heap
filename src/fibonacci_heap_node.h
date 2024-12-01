@@ -26,5 +26,4 @@ namespace kstmc {
     };
 }
 
-
 #endif //FIBONACCIHEAP_NODE_H

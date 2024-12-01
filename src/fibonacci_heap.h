@@ -313,7 +313,7 @@ namespace kstmc {
             return _minNode->data;
         }
 
-        void decrease_key(value_type prevValue, value_type newValue) {
+        void decrease_key(const_reference prevValue, const_reference newValue) {
             auto foundNode = find(_first, prevValue);
             if (foundNode == nullptr) return;
             foundNode->data = newValue;
@@ -430,7 +430,7 @@ namespace kstmc {
             consolidate(currentNode);
         }
 
-        node_pointer allocate(value_type value) {
+        node_pointer allocate(const_reference value) {
             node_pointer node(_alloc.allocate(1));
             node->data = value;
             ++_size;
@@ -452,4 +452,5 @@ namespace kstmc {
         std::vector<node_pointer> _degreeTree = std::vector<node_pointer>(239, nullptr);
     };
 }
+
 #endif //FIBONACCIIHEAP_LIBRARY_H
