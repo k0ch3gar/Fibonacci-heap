@@ -18,14 +18,14 @@ namespace kstmc {
     public:
         typedef fibonacci_heap<Tp, Comp> heap_type;
         typedef std::shared_ptr<heap_type> heap_pointer;
-        typedef Tp value_type;
-        typedef Comp key_compare;
-        typedef key_compare value_compare;
-        typedef value_type& reference;
-        typedef const value_type& const_reference;
-        typedef uint64_t size_type;
         typedef fibonacci_heap_node<Tp> node_type;
         typedef node_type::node_pointer node_pointer;
+        typedef node_type::value_type value_type;
+        typedef node_type::reference reference;
+        typedef node_type::const_reference const_reference;
+        typedef Comp key_compare;
+        typedef key_compare value_compare;
+        typedef uint64_t size_type;
         typedef Alloc allocator_type;
 
         // unimplemented typedefs
