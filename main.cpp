@@ -9,7 +9,7 @@ int main() {
     }
     kstmc::fibonacci_heap<int>::iterator it = fib.begin();
     kstmc::fibonacci_heap<int>::iterator end = fib.end();
-    while (it++ != end) {
-        std::cout << *it << std::endl;
+    for (int i : fib) {
+        std::cout << i << std::endl;
     }
 }

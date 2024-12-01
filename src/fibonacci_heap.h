@@ -79,11 +79,11 @@ namespace kstmc {
         }
 
         const_iterator begin() const {
-            return iterator(_first);
+            return iterator::makeBegin(_first);
         }
 
         const_iterator end() const {
-            return iterator(_last);
+            return iterator::makeEnd(_last);
         }
 
         reverse_iterator rbegin() {
