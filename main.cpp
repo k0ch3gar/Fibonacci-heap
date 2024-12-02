@@ -1,15 +1,13 @@
-#include <src/FibHeap.h>
+#include <src/fibonacci_heap.h>
 #include <iostream>
 
 
 int main() {
-    kstmc::FibonacciHeap fib;
-    for (int i = 0; i < 10; ++i) {
+    kstmc::fibonacci_heap<int> fib;
+    for (int i = 0; i < 100; ++i) {
         fib.insert(i);
     }
-    for (int i = 0; i < 11; ++i) {
-        auto ans = fib.getMin();
-        std::cout << ans.value_or(-1) << '\n';
-        fib.removeMin();
+    for (auto i : fib) {
+        std::cout << i << std::endl;
     }
 }
