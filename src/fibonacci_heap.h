@@ -1,6 +1,7 @@
 #ifndef FIBONACCIIHEAP_LIBRARY_H
 #define FIBONACCIIHEAP_LIBRARY_H
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <unordered_set>
@@ -61,7 +62,7 @@ namespace kstmc {
         }
 
         static void swap(heap_type& a, heap_type& b) {
-            throw std::logic_error("fibonacci::swap method is unimplemented");
+            std::swap(a, b);
         }
 
         ~fibonacci_heap() {
@@ -119,11 +120,15 @@ namespace kstmc {
 
         // comparison
         bool operator==(const heap_type& other) const {
-            throw std::logic_error("fibonacci::operator== method is unimplemented");
+            if (size() != other.size()) return false;
+            auto otherIterator = other.begin();
+            return std::all_of(begin(), end(), [&](const value_type& x) {
+                return *(otherIterator++) == x;
+            });
         }
 
         bool operator!=(const heap_type& other) const {
-            throw std::logic_error("fibonacci::operator!= method is unimplemented");
+            return !(*this == other);
         }
 
         // observers
