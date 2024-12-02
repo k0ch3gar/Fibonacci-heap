@@ -7,6 +7,7 @@
 #include <expected>
 #include <vector>
 #include "fibonacci_heap_node.h"
+#include "fibonacci_heap_iterator.h"
 
 namespace kstmc {
     template <
@@ -23,18 +24,17 @@ namespace kstmc {
         typedef node_type::value_type value_type;
         typedef node_type::reference reference;
         typedef node_type::const_reference const_reference;
+        typedef node_type::size_type size_type;
         typedef Comp key_compare;
         typedef key_compare value_compare;
-        typedef uint64_t size_type;
         typedef Alloc allocator_type;
-
-        // unimplemented typedefs
-        typedef node_type iterator;
-        typedef node_type insert_return_type;
-
+        typedef fibonacci_heap_iterator<value_type> iterator;
         typedef const iterator const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+        // unimplemented typedefs
+        typedef node_type insert_return_type;
 
         // construct/copy/destroy
         fibonacci_heap() = default;
@@ -70,19 +70,19 @@ namespace kstmc {
 
         // iterators
         iterator begin() {
-            throw std::logic_error("fibonacci::begin method is unimplemented");
+            return iterator(_first);
         }
 
         iterator end() {
-            throw std::logic_error("fibonacci::end method is unimplemented");
+            return ++iterator(find_last());
         }
 
         const_iterator begin() const {
-            throw std::logic_error("fibonacci::begin method is unimplemented");
+            return iterator(_first);
         }
 
         const_iterator end() const {
-            throw std::logic_error("fibonacci::end method is unimplemented");
+            return ++iterator(find_last());
         }
 
         reverse_iterator rbegin() {
@@ -271,10 +271,6 @@ namespace kstmc {
             throw std::logic_error("fibonacci::equal_range method is unimplemented");
         }
 
-        size_type size() {
-            return size;
-        }
-
         // extra
         void remove_min() {
             if (_size == 0) return;
@@ -313,7 +309,7 @@ namespace kstmc {
             return _minNode->data;
         }
 
-        void decrease_key(value_type prevValue, value_type newValue) {
+        void decrease_key(const_reference prevValue, const_reference newValue) {
             auto foundNode = find(_first, prevValue);
             if (foundNode == nullptr) return;
             foundNode->data = newValue;
@@ -337,12 +333,23 @@ namespace kstmc {
         }
 
     private:
-        void dfs_copy(node_pointer& current, heap_pointer & newHeap) {
+        // idk if it even is needed
+        node_pointer find_last() {
+            node_pointer tmp_node = _last;
+            while (tmp_node->right != nullptr || tmp_node->lastChild != nullptr) {
+                if (tmp_node->right != nullptr) tmp_node = tmp_node->right;
+                else tmp_node = tmp_node->lastChild;
+            }
+            return tmp_node;
+        }
+
+        void dfs_copy(node_pointer& current, heap_pointer& newHeap) {
             if (current == nullptr) return;
             newHeap->insert(current->data);
             dfs_copy(current->firstChild, newHeap);
             dfs_copy(current->right, newHeap);
         }
+
         void append_to_list(node_pointer& firstNode, node_pointer& lastNode, node_pointer& newNode) {
             if (firstNode == nullptr) {
                 firstNode = newNode;
@@ -358,6 +365,7 @@ namespace kstmc {
             newNode->right = nullptr;
             newNode->parent = firstNode->parent;
         }
+
         void remove_from_list(node_pointer& firstNode, node_pointer& lastNode, node_pointer& listNode) {
             auto l = listNode->left;
             auto r = listNode->right;
@@ -374,6 +382,7 @@ namespace kstmc {
             listNode->right = nullptr;
             listNode->left = nullptr;
         }
+
         node_pointer find(node_pointer& currentNode, Tp val) {
             if (currentNode == nullptr) return nullptr;
             if (currentNode->data == val) return currentNode;
@@ -381,6 +390,7 @@ namespace kstmc {
             if (foundNode != nullptr) return foundNode;
             return find(currentNode->right, val);
         }
+
         void cascade_cut(node_pointer& current) {
             if (current == nullptr) return;
             if (current->marked) {
@@ -393,6 +403,7 @@ namespace kstmc {
             }
             current->marked = true;
         }
+
         void cut(node_pointer& childToCut) {
             if (childToCut == nullptr || childToCut->parent == nullptr) return;
 
@@ -405,7 +416,8 @@ namespace kstmc {
             childToCut->marked = false;
             --parent->degree;
         }
-        void consolidate(node_pointer &currentNode) {
+
+        void consolidate(node_pointer& currentNode) {
             if (_degreeTree.at(currentNode->degree) == nullptr) {
                 _degreeTree.at(currentNode->degree) = currentNode;
                 return;
@@ -423,13 +435,15 @@ namespace kstmc {
             currentNode->degree++;
             consolidate(currentNode);
         }
-        node_pointer allocate(value_type value) {
+
+        node_pointer allocate(const_reference value) {
             node_pointer node(_alloc.allocate(1));
             node->data = value;
             ++_size;
             return node;
         }
-        void deallocate(node_pointer node) {
+
+        void deallocate(node_pointer& node) {
             if (node == nullptr) return;
             _alloc.deallocate(node, 1);
             --_size;
@@ -444,4 +458,5 @@ namespace kstmc {
         std::vector<node_pointer> _degreeTree = std::vector<node_pointer>(239, nullptr);
     };
 }
+
 #endif //FIBONACCIIHEAP_LIBRARY_H
